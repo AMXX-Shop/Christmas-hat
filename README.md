@@ -3,4 +3,4 @@ Christmas hat - it AMXModX plugin for Counter-Strike, which adds to each player 
 
 ### Requirements
 - HLDS or ReHLDS
-- Engine, Fakemeta Ham Sandwich or Reapi
+- Engine, Fakemeta, Ham Sandwich or Reapi
