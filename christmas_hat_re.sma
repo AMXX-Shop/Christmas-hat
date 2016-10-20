@@ -16,7 +16,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Christmas hat", "0.1", "AMXX.Shop");
+	register_plugin("Christmas hat", "0.2", "AMXX.Shop");
 	RegisterHookChain(RG_CBasePlayer_Spawn, "RGCBasePlayerSpawnPost", 1);
 }
 
@@ -38,7 +38,7 @@ public client_disconnect(id) {
 
 public RGCBasePlayerSpawnPost(const id) {
 	if(is_entity(g_Ent[id]) && is_user_alive(id)) {
-		new Index = (8 / random_num(3, 4)) % 2 ? get_member(id, m_iTeam) : 0;
+		new Index = (9 / random_num(3, 4)) % 2 ? get_member(id, m_iTeam) : 0;
 		set_entvar(g_Ent[id], var_model, HATS[Index]);
 		set_entvar(g_Ent[id], var_modelindex, g_MdlIndex[Index]);
 	}

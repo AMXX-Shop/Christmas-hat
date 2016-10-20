@@ -9,11 +9,10 @@ new const HATS[][] = {
 	"models/christmas_hat/deer.mdl", "models/christmas_hat/hat_t.mdl", "models/christmas_hat/hat_ct.mdl"
 };
 
-const MAX_PLAYERS = 32;
 const m_iPlayerTeam = 114;
 const EXTRAOFFSET = 5;
 
-new g_Ent[MAX_PLAYERS + 1];
+new g_Ent[33];
 
 public plugin_precache() {
 	for(new i; i < sizeof HATS; i++) {
@@ -22,7 +21,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Christmas hat", "0.1", "AMXX.Shop");
+	register_plugin("Christmas hat", "0.2", "AMXX.Shop");
 	RegisterHam(Ham_Spawn, "player", "HamSpawnPlayerPost", 1);
 }
 
@@ -44,7 +43,7 @@ public client_disconnect(id) {
 
 public HamSpawnPlayerPost(const id) {
 	if(is_valid_ent(g_Ent[id]) && is_user_alive(id)) {
-		entity_set_model(g_Ent[id], HATS[(8 / random_num(3, 4)) % 2 ? get_pdata_int(id, m_iPlayerTeam, EXTRAOFFSET) : 0]);
+		entity_set_model(g_Ent[id], HATS[(9 / random_num(3, 4)) % 2 ? get_pdata_int(id, m_iPlayerTeam, EXTRAOFFSET) : 0]);
 	}
 }
 
