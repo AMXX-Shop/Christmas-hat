@@ -3,21 +3,35 @@
 
 #pragma semicolon 1
 
-new const HATS[][] = {
-	"models/christmas_hat/deer.mdl", "models/christmas_hat/hat_t.mdl", "models/christmas_hat/hat_ct.mdl"
-};
+enum {
+	hat,
+	deer
+}
 
-new g_MdlIndex[3], g_Ent[MAX_CLIENTS + 1];
+enum {
+	random_all,
+	c4_owner
+}
+
+new const MDL_FILE[] = "models/hats.mdl";
+
+const DEER_HAT_FOR = random_all; // modify like you need
+
+new g_MdlIndex, g_Ent[MAX_CLIENTS + 1];
 
 public plugin_precache() {
-	for(new i; i < sizeof HATS; i++) {
-		g_MdlIndex[i] = precache_model(HATS[i]);
-	}
+	g_MdlIndex = precache_model(MDL_FILE);
 }
 
 public plugin_init() {
-	register_plugin("Christmas hat", "0.2", "AMXX.Shop");
-	RegisterHookChain(RG_CBasePlayer_Spawn, "RGCBasePlayerSpawnPost", 1);
+	register_plugin("Christmas hat", "0.3", "AMXX.Shop");
+	RegisterHookChain(RG_CBasePlayer_Spawn, "FwdSpawnPost", true);
+	#if DEER_HAT_FOR == c4_owner
+	if(rg_find_ent_by_class(INVALID_HANDLE, "func_bomb_target", true) || rg_find_ent_by_class(INVALID_HANDLE, "info_bomb_target", true)) {
+		RegisterHookChain(RG_CBasePlayer_AddPlayerItem, "FwdAddPlayerItemPost", true);
+		RegisterHookChain(RG_CBasePlayer_RemovePlayerItem, "FwdRemovePlayerItemPost", true);
+	}
+	#endif
 }
 
 public client_putinserver(id) {
@@ -27,6 +41,8 @@ public client_putinserver(id) {
 	CheckEnt(id);
 	if((g_Ent[id] = rg_create_entity("info_target"))) {
 		set_entvar(g_Ent[id], var_classname, "_christmas_hat_ent");
+		set_entvar(g_Ent[id], var_model, MDL_FILE);
+		set_entvar(g_Ent[id], var_modelindex, g_MdlIndex);
 		set_entvar(g_Ent[id], var_movetype, MOVETYPE_FOLLOW);
 		set_entvar(g_Ent[id], var_aiment, id);
 	}
@@ -36,11 +52,25 @@ public client_disconnect(id) {
 	CheckEnt(id);
 }
 
-public RGCBasePlayerSpawnPost(const id) {
+public FwdSpawnPost(const id) {
 	if(is_entity(g_Ent[id]) && is_user_alive(id)) {
-		new Index = (9 / random_num(3, 4)) % 2 ? get_member(id, m_iTeam) : 0;
-		set_entvar(g_Ent[id], var_model, HATS[Index]);
-		set_entvar(g_Ent[id], var_modelindex, g_MdlIndex[Index]);
+		#if DEER_HAT_FOR == c4_owner
+		SetEntModel(id, hat, get_member(id, m_iTeam));
+		#else
+		SetEntModel(id, random(10) % 2 ? hat : deer, get_member(id, m_iTeam));
+		#endif
+	}
+}
+
+public FwdAddPlayerItemPost(const id, const Ent) {
+	if(get_member(Ent, m_iId) == CSW_C4) {
+		SetEntModel(id, deer);
+	}
+}
+
+public FwdRemovePlayerItemPost(const id, const Ent) {
+	if(get_member(Ent, m_iId) == CSW_C4) {
+		SetEntModel(id, hat, get_member(id, m_iTeam));
 	}
 }
 
@@ -49,5 +79,12 @@ CheckEnt(const id) {
 		set_entvar(g_Ent[id], var_flags, FL_KILLME);
 		set_entvar(g_Ent[id], var_nextthink, get_gametime());
 		g_Ent[id] = 0;
+	}
+}
+
+SetEntModel(const id, const Body, const Skin = 0) {
+	set_entvar(g_Ent[id], var_body, Body);
+	if(Body == hat) {
+		set_entvar(g_Ent[id], var_skin, Skin - 1);
 	}
 }
