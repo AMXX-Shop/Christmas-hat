@@ -27,7 +27,7 @@ public plugin_init() {
 	register_plugin("Christmas hat", "0.3", "AMXX.Shop");
 	RegisterHookChain(RG_CBasePlayer_Spawn, "FwdSpawnPost", true);
 	#if DEER_HAT_FOR == c4_owner
-	if(rg_find_ent_by_class(INVALID_HANDLE, "func_bomb_target", true) || rg_find_ent_by_class(INVALID_HANDLE, "info_bomb_target", true)) {
+	if(get_member_game(m_bMapHasBombTarget)) {
 		RegisterHookChain(RG_CBasePlayer_AddPlayerItem, "FwdAddPlayerItemPost", true);
 		RegisterHookChain(RG_CBasePlayer_RemovePlayerItem, "FwdRemovePlayerItemPost", true);
 	}
